@@ -9,7 +9,7 @@ import './interfaces/IERC20.sol';
 contract Arbitrage {
   address public factory; //info about diff liquidity pools in exchange
   uint constant deadline = 10 days;
-  IUniswapV2Router02 public sushiRouter;
+  IUniswapV2Router02 public sushiRouter; //central smart contract in sushiswap ecosystem that is used to execute trades in sushiswap liquidity pools
 
   constructor(address _factory, address _sushiRouter) public {
     factory = _factory;  
