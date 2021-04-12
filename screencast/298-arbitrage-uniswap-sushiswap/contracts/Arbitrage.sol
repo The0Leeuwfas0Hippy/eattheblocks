@@ -63,28 +63,32 @@ contract Arbitrage {
     /*
         populate the path array of the addresses - Here we define the direction of the trade 
     */
-    path[0] = _amount0 == 0 ? token1 : token0; //if _amount0 = 0, then we are seling token1 for token0 ON SUSHISWAP 
+    path[0] = _amount0 == 0 ? token1 : token0; //if _amount0 = 0, then we are selling token1 for token0 ON SUSHISWAP [we get token0 and _amount0 will = price of token0]
     path[1] = _amount0 == 0 ? token0 : token1;
 
+    //a pointer to the token we are gonna sell on sushiswap
     IERC20 token = IERC20(_amount0 == 0 ? token1 : token0);
     
+    //this line allows the router of sushiswap to spend our token on - NECESSARY FOR TRADING ON UNISWAP
     token.approve(address(sushiRouter), amountToken);
 
-    uint amountRequired = UniswapV2Library.getAmountsIn(
-      factory, 
-      amountToken, 
-      path
-    )[0];
-    uint amountReceived = sushiRouter.swapExactTokensForTokens(
-      amountToken, 
-      amountRequired, 
-      path, 
-      msg.sender, 
-      deadline
-    )[1];
+    //this line calculates the amount of tokens we will have to reimburse to the FLASHLOAN OF UNISWAP 
+    uint amountRequired = UniswapV2Library.getAmountsIn( factory, amountToken, path)[0];
+    
+    /*  sell the token borrowed from uniswap - we sell it on SUSHISWAP 
+    
+        @Params:
+                amountToken => amount we want to sell
+                amountRequired => minimum amount of token that we want to receive on exchange - The amount we will need to reimburse the flashloan
+                path => tell SUSHISWAP what we want to sell and what we want to buy - DIRECTION OF TRADE
+                msg.sender => the address that's going to receive the token - OUR SMART CONTRACT
+                deadline => the time limit after which the order will be rejected by SUSHISWAP 
+    */
+    uint amountReceived = sushiRouter.swapExactTokensForTokens( amountToken, amountRequired, path, msg.sender, deadline)[1];
 
+//pointer to the token that our contract received from SUSHISWAP
     IERC20 otherToken = IERC20(_amount0 == 0 ? token0 : token1);
-    otherToken.transfer(msg.sender, amountRequired);
-    otherToken.transfer(tx.origin, amountReceived - amountRequired);
+    otherToken.transfer(msg.sender, amountRequired); //a portion of the token will be used to reimburse our flashloan from uniswap 
+    otherToken.transfer(tx.origin, amountReceived - amountRequired); //THIS IS OUR PROFIT!!!! 
   }
 }
