@@ -31,6 +31,7 @@ contract Arbitrage {
     
     //this line initiates the flash loan
     //one of the 'amounts' = 0; if one of the 'amounts' !=0 then it's the amount of the token you want to borrow
+    //the 'address(this)' is the address of where we want to receive the token that we borrow
      IUniswapV2Pair(pairAddress).swap( amount0, amount1, address(this), bytes('not empty') ); 
     }
 
