@@ -21,12 +21,18 @@ contract Arbitrage {
   */
   function startArbitrage(address token0, address token1, uint amount0, uint amount1) external 
   {
+    //the address of the pair smart-contract of uniswap for the two tokens
+    //the token order in the parameters doesn't matter
     address pairAddress = IUniswapV2Factory(factory).getPair(token0, token1);
     
+    //this line makes sure the pair smartcontract actually exists 
+    //the pair smartcontract is the liquidity pool of uniswap where the trading actually happens
     require(pairAddress != address(0), 'This pool does not exist');
     
-    IUniswapV2Pair(pairAddress).swap( amount0, amount1, address(this), bytes('not empty') );
-  }
+    //this line initiates the flash loan
+    //one of the 'amounts' = 0; if one of the 'amounts' !=0 then it's the amount you are borrowing
+     IUniswapV2Pair(pairAddress).swap( amount0, amount1, address(this), bytes('not empty') ); 
+    }
 
   function uniswapV2Call(
     address _sender, 
