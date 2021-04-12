@@ -30,7 +30,7 @@ contract Arbitrage {
     require(pairAddress != address(0), 'This pool does not exist');
     
     //this line initiates the flash loan
-    //one of the 'amounts' = 0; if one of the 'amounts' !=0 then it's the amount you are borrowing
+    //one of the 'amounts' = 0; if one of the 'amounts' !=0 then it's the amount of the token you want to borrow
      IUniswapV2Pair(pairAddress).swap( amount0, amount1, address(this), bytes('not empty') ); 
     }
 
