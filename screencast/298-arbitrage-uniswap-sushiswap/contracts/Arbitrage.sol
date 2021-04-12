@@ -33,27 +33,37 @@ contract Arbitrage {
     //one of the 'amounts' = 0; if one of the 'amounts' !=0 then it's the amount of the token you want to borrow
     //the 'address(this)' is the address of where we want to receive the token that we borrow
      IUniswapV2Pair(pairAddress).swap( amount0, amount1, address(this), bytes('not empty') ); 
+     
     }
 
-  function uniswapV2Call(
-    address _sender, 
-    uint _amount0, 
-    uint _amount1, 
-    bytes calldata _data
-  ) external {
+  /*
+      @params: 
+              _sender => the address that triggered the flashloan
+              _amounts => one of the 'amounts' = 0;;;  if one of the 'amounts' != 0 then it's the amount of the token you want to borrow
+              
+  */
+  function uniswapV2Call(address _sender, uint _amount0, uint _amount1, bytes calldata _data) external 
+  {
     address[] memory path = new address[](2);
+    
+    //the amount of token that we borrowed - can be amount0 or amount1 - one of them = 0
     uint amountToken = _amount0 == 0 ? _amount1 : _amount0;
     
+    //addresses of the two tokens in the liquidity pool of uniswap 
     address token0 = IUniswapV2Pair(msg.sender).token0();
     address token1 = IUniswapV2Pair(msg.sender).token1();
 
-    require(
-      msg.sender == UniswapV2Library.pairFor(factory, token0, token1), 
-      'Unauthorized'
-    ); 
+    //make sure the call comes from one of the pair contracts of Uniswap 
+    require( msg.sender == UniswapV2Library.pairFor(factory, token0, token1), 'Unauthorized'); 
+    
+    //make sure one of the amounts = 0
     require(_amount0 == 0 || _amount1 == 0);
 
-    path[0] = _amount0 == 0 ? token1 : token0;
+  
+    /*
+        populate the path array of the addresses - Here we define the direction of the trade 
+    */
+    path[0] = _amount0 == 0 ? token1 : token0; //if _amount0 = 0, then we are seling token1 for token0 ON SUSHISWAP 
     path[1] = _amount0 == 0 ? token0 : token1;
 
     IERC20 token = IERC20(_amount0 == 0 ? token1 : token0);
