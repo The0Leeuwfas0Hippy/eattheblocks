@@ -7,7 +7,7 @@ import './interfaces/IUniswapV2Factory.sol';
 import './interfaces/IERC20.sol';
 
 contract Arbitrage {
-  address public factory;
+  address public factory; //info about diff liquidity pools in exchange
   uint constant deadline = 10 days;
   IUniswapV2Router02 public sushiRouter;
 
