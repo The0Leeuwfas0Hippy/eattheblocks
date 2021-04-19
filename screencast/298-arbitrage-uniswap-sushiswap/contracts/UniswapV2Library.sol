@@ -1,10 +1,9 @@
 pragma solidity >=0.5.0;
 
-//import './interfaces/IUniswapV2Pair.sol';
-import './SafeMath.sol';
-//import "@openzeppelin/contracts/math/SafeMath.sol";
+import './interfaces/IUniswapV2Pair.sol';
+import '.math/SafeMath.sol';
 
-//import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v2.5.0/contracts/math/SafeMath.sol'
+//import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v2.5.0/contracts/math/SafeMath.sol';
 
 library UniswapV2Library {
     using SafeMath for uint;
